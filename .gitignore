@@ -322,3 +322,6 @@ healthchecksdb
 
 # create app
 *.ps1
+
+# Docs
+[Dd]ocs
