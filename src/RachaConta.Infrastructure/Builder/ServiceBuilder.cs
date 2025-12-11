@@ -1,0 +1,48 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using RachaConta.Application.Interfaces; // For IEmailService
+using RachaConta.Application.UseCases;
+using RachaConta.Core.Interfaces.Repositories;
+using RachaConta.Core.Interfaces.Services;
+using RachaConta.Infrastructure.Data;
+using RachaConta.Infrastructure.Repositories;
+using RachaConta.Infrastructure.Services;
+
+namespace RachaConta.Infrastructure.Builder;
+
+public static class ServiceBuilder
+{
+    public static IServiceCollection AddProjectServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        // DbContext
+        services.AddDbContext<RachaContaDbContext>(options =>
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("RachaConta.Infrastructure")));
+
+        // Repositories
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+        services.AddScoped<IInviteRepository, InviteRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+        // Services
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IEncryptionService, EncryptionService>();
+
+        // UseCases
+        services.AddScoped<RegisterUserUseCase>();
+        services.AddScoped<RequestPasswordRecoveryUseCase>();
+        services.AddScoped<ResetPasswordUseCase>();
+        services.AddScoped<LoginUseCase>();
+        services.AddScoped<SendInviteUseCase>();
+        services.AddScoped<ResendInviteUseCase>();
+        services.AddScoped<DeleteInviteUseCase>();
+        services.AddScoped<ListInvitesUseCase>();
+        services.AddScoped<CreateCategoryUseCase>();
+        services.AddScoped<ListCategoriesUseCase>();
+
+        return services;
+    }
+}

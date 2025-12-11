@@ -264,7 +264,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
 
         // Setup email service mock
         _factory.EmailServiceMock
-            .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.SendPasswordResetEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -278,7 +278,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
 
         // Verify email was sent
         _factory.EmailServiceMock.Verify(
-            x => x.SendEmailAsync(
+            x => x.SendPasswordResetEmailAsync(
                 "forgot@example.com",
                 It.IsAny<string>(),
                 It.IsAny<string>()),
@@ -300,7 +300,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
 
         // Setup email service mock
         _factory.EmailServiceMock
-            .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.SendPasswordResetEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
         // Act
