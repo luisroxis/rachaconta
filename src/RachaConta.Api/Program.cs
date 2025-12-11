@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RachaConta.Api.Middleware;
 using RachaConta.Application.Interfaces;
 using RachaConta.Application.UseCases;
 using RachaConta.Core.Interfaces.Services;
@@ -97,10 +98,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Add authenticated user middleware
-app.UseMiddleware<RachaConta.Api.Middleware.AuthenticatedUserMiddleware>();
+app.UseMiddleware<AuthenticatedUserMiddleware>();
 
 app.MapControllers();
 
 app.MapHealthChecks("/health");
 
 app.Run();
+
+// Make the implicit Program class public for integration tests
+public partial class Program { }

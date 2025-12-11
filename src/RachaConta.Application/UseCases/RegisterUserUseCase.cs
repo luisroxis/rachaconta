@@ -1,7 +1,7 @@
-using RachaConta.Application.DTOs;
-using RachaConta.Application.Interfaces;
 using RachaConta.Core.Entities;
 using BCrypt.Net;
+using RachaConta.Application.DTOs;
+using RachaConta.Application.Interfaces;
 
 namespace RachaConta.Application.UseCases;
 
@@ -56,12 +56,10 @@ public class RegisterUserUseCase
 
         // Return response
         return new RegisterUserResponse
-        {
-            Id = createdUser.Id,
+        {            
             Name = createdUser.Name,
             Email = createdUser.Email,
-            UserName = createdUser.UserName,
-            CreatedAt = createdUser.CreatedAt
+            UserName = createdUser.UserName          
         };
     }
 }

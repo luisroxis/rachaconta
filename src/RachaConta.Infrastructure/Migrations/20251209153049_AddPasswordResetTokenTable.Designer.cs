@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RachaConta.Infrastructure.Data;
@@ -11,9 +12,11 @@ using RachaConta.Infrastructure.Data;
 namespace RachaConta.Infrastructure.Migrations
 {
     [DbContext(typeof(RachaContaDbContext))]
-    partial class RachaContaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251209153049_AddPasswordResetTokenTable")]
+    partial class AddPasswordResetTokenTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,64 +24,6 @@ namespace RachaConta.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("RachaConta.Core.Entities.Invite", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Aceite")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("AmigoId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("CorpoEmail")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("DataEnvio")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DataReenvio")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<bool>("Reenvio")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("UsuarioId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DataEnvio");
-
-                    b.HasIndex("Email");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("Invites", (string)null);
-                });
 
             modelBuilder.Entity("RachaConta.Core.Entities.PasswordResetToken", b =>
                 {
@@ -171,17 +116,6 @@ namespace RachaConta.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("RachaConta.Core.Entities.Invite", b =>
-                {
-                    b.HasOne("RachaConta.Core.Entities.User", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("RachaConta.Core.Entities.PasswordResetToken", b =>
