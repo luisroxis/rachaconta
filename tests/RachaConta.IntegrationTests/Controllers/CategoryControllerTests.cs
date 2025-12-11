@@ -21,7 +21,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
         _factory = factory;
         _factory.ResetDatabase();
         _client = factory.CreateClient();
-        _authHelper = new TestAuthHelper(factory);
+        _authHelper = new TestAuthHelper(factory, _client);
     }
 
     [Fact]

@@ -1,10 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using RachaConta.Application.DTOs.Request;
+using RachaConta.Application.DTOs.Response;
 using RachaConta.Core.Entities;
 using RachaConta.Core.Interfaces.Services;
 using RachaConta.Infrastructure.Data;
@@ -14,10 +17,12 @@ namespace RachaConta.IntegrationTests.Helpers;
 public class TestAuthHelper
 {
     private readonly CustomWebApplicationFactory _factory;
+    private readonly HttpClient _client;
 
-    public TestAuthHelper(CustomWebApplicationFactory factory)
+    public TestAuthHelper(CustomWebApplicationFactory factory, HttpClient client)
     {
         _factory = factory;
+        _client = client;
     }
 
     public async Task<User> CreateTestUserAsync(
@@ -47,33 +52,6 @@ public class TestAuthHelper
         return user;
     }
 
-    public string GenerateJwtToken(Guid userId)
-    {
-        var configuration = _factory.Services.GetRequiredService<IConfiguration>();
-        var jwtKey = configuration["Jwt:Key"]!;
-        var jwtIssuer = configuration["Jwt:Issuer"]!;
-        var jwtAudience = configuration["Jwt:Audience"]!;
-
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
-
-        var token = new JwtSecurityToken(
-            issuer: jwtIssuer,
-            audience: jwtAudience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
-            signingCredentials: credentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-
     public void AddAuthorizationHeader(HttpClient client, string token)
     {
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -86,7 +64,17 @@ public class TestAuthHelper
         string password = "Test@123")
     {
         var user = await CreateTestUserAsync(name, email, username, password);
-        var token = GenerateJwtToken(user.Id);
-        return (user, token);
+        
+        var loginRequest = new LoginRequest 
+        { 
+            EmailOrUsername = email, 
+            Password = password 
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/user/login", loginRequest);
+        response.EnsureSuccessStatusCode();
+
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return (user, loginResponse!.Token);
     }
 }

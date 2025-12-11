@@ -20,7 +20,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
     {
         _factory = factory;
         _client = factory.CreateClient();
-        _authHelper = new TestAuthHelper(factory);
+        _authHelper = new TestAuthHelper(factory, _client);
         _factory.ResetDatabase();
     }
 
