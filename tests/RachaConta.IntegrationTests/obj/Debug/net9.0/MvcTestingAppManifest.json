@@ -1,0 +1,6 @@
+{
+  "RachaConta.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "E:\\Projects\\Projects_e\\rachaconta\\RachaConta\\src\\RachaConta.Api",
+  "RachaConta.Application, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "E:\\Projects\\Projects_e\\rachaconta\\RachaConta\\src\\RachaConta.Application",
+  "RachaConta.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "E:\\Projects\\Projects_e\\rachaconta\\RachaConta\\src\\RachaConta.Core",
+  "RachaConta.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null": "E:\\Projects\\Projects_e\\rachaconta\\RachaConta\\src\\RachaConta.Infrastructure"
+}

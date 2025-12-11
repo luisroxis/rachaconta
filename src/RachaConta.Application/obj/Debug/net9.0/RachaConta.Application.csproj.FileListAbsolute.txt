@@ -1,0 +1,15 @@
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\bin\Debug\net9.0\RachaConta.Application.deps.json
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\bin\Debug\net9.0\RachaConta.Application.dll
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\bin\Debug\net9.0\RachaConta.Application.pdb
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\bin\Debug\net9.0\RachaConta.Core.dll
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\bin\Debug\net9.0\RachaConta.Core.pdb
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\RachaConta.Application.csproj.AssemblyReference.cache
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\RachaConta.Application.GeneratedMSBuildEditorConfig.editorconfig
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\RachaConta.Application.AssemblyInfoInputs.cache
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\RachaConta.Application.AssemblyInfo.cs
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\RachaConta.Application.csproj.CoreCompileInputs.cache
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\RachaCon.0F42909F.Up2Date
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\RachaConta.Application.dll
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\refint\RachaConta.Application.dll
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\RachaConta.Application.pdb
+E:\Projects\Projects_e\rachaconta\RachaConta\src\RachaConta.Application\obj\Debug\net9.0\ref\RachaConta.Application.dll
