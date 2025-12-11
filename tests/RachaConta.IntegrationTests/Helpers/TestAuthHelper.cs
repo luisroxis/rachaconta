@@ -28,7 +28,6 @@ public class TestAuthHelper
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
-        var encryptionService = scope.ServiceProvider.GetRequiredService<IEncryptionService>();
 
         var user = new User
         {
@@ -36,7 +35,7 @@ public class TestAuthHelper
             Name = name,
             Email = email,
             UserName = username,
-            Password = encryptionService.Encrypt(password),
+            Password = BCrypt.Net.BCrypt.HashPassword(password),
             TermOfUse = true,
             PrivacyPolicy = true,
             CreatedAt = DateTime.UtcNow

@@ -325,3 +325,7 @@ healthchecksdb
 
 # Docs
 [Dd]ocs
+
+
+# Txt documents
+*.txt
