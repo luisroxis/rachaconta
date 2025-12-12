@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using RachaConta.Application.Interfaces;
 using RachaConta.Infrastructure.Data;
@@ -22,21 +20,13 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((context, config) =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                { "Jwt:Key", "ThisIsASecretKeyForIntegrationTesting2025!" },
-                { "Jwt:Issuer", "RachaConta.IntegrationTests" },
-                { "Jwt:Audience", "RachaConta.IntegrationTests" }
-            });
-        });
+        // Configuration for Testing is loaded from appsettings.Testing.json automatically by UseEnvironment("Testing")
 
         builder.ConfigureTestServices(services =>
         {
             // 1. Remove all existing Context and Options registrations to clear the deck
             var descriptors = services.Where(d => 
-                d.ServiceType == typeof(DbContextOptions<RachaContaDbContext>) ||
+                d.ServiceType == typeof(DbContextOptions<TestRachaContaDbContext>) ||
                 d.ServiceType == typeof(RachaContaDbContext) ||
                 d.ServiceType == typeof(DbContextOptions)).ToList();
             
@@ -87,7 +77,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         EmailServiceMock.Reset();
 
         using var scope = Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
         
         db.Database.EnsureDeleted();
         db.Database.EnsureCreated();

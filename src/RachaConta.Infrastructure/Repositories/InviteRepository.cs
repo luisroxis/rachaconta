@@ -24,14 +24,13 @@ public class InviteRepository : IInviteRepository
     public async Task<Invite?> GetByIdAsync(Guid id)
     {
         return await _context.Invites
-            .Include(i => i.Usuario)
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 
     public async Task<List<Invite>> GetByUserIdAsync(Guid userId)
     {
         return await _context.Invites
-            .Where(i => i.UsuarioId == userId)
+            .Where(i => i.AmigoId == userId.ToString())
             .OrderByDescending(i => i.DataEnvio)
             .ToListAsync();
     }

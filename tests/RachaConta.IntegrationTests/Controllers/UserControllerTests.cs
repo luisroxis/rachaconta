@@ -1,13 +1,14 @@
+
+
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using RachaConta.Application.DTOs;
 using RachaConta.Application.DTOs.Request;
 using RachaConta.Application.DTOs.Response;
 using RachaConta.Core.Entities;
-using RachaConta.Infrastructure.Data;
+using RachaConta.IntegrationTests.Data;
 using RachaConta.IntegrationTests.Helpers;
 
 namespace RachaConta.IntegrationTests.Controllers;
@@ -22,7 +23,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
     {
         _factory = factory;
         _client = factory.CreateClient();
-        _authHelper = new TestAuthHelper(factory);
+        _authHelper = new TestAuthHelper(factory, _client);
         _factory.ResetDatabase();
     }
 
@@ -264,7 +265,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
 
         // Setup email service mock
         _factory.EmailServiceMock
-            .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.SendPasswordResetEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -278,7 +279,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
 
         // Verify email was sent
         _factory.EmailServiceMock.Verify(
-            x => x.SendEmailAsync(
+            x => x.SendPasswordResetEmailAsync(
                 "forgot@example.com",
                 It.IsAny<string>(),
                 It.IsAny<string>()),
@@ -300,7 +301,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
 
         // Setup email service mock
         _factory.EmailServiceMock
-            .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.SendPasswordResetEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask);
 
         // Act
@@ -340,7 +341,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
 
         // Create a password reset token
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
         
         var token = new PasswordResetToken
         {
@@ -405,7 +406,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
             username: "resetuser3");
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
         
         var token = new PasswordResetToken
         {
@@ -444,7 +445,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
             username: "resetuser4");
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
         
         var token = new PasswordResetToken
         {
@@ -483,7 +484,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>, I
             username: "resetuser5");
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
         
         var token = new PasswordResetToken
         {

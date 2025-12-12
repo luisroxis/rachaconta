@@ -40,17 +40,7 @@ public class InviteConfiguration : IEntityTypeConfiguration<Invite>
         builder.Property(i => i.Aceite)
             .IsRequired();
 
-        builder.Property(i => i.UsuarioId)
-            .IsRequired();
-
-        // Foreign key relationship
-        builder.HasOne(i => i.Usuario)
-            .WithMany()
-            .HasForeignKey(i => i.UsuarioId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         // Indexes for performance
-        builder.HasIndex(i => i.UsuarioId);
         builder.HasIndex(i => i.Email);
         builder.HasIndex(i => i.DataEnvio);
     }

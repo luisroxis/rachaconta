@@ -21,10 +21,9 @@ public class DeleteInviteUseCase
             throw new InvalidOperationException("Convite não encontrado.");
         }
 
-        // Verify ownership
-        if (invite.UsuarioId != usuarioId)
+        if (invite.AmigoId != usuarioId.ToString())
         {
-            throw new UnauthorizedAccessException("Você não tem permissão para deletar este convite.");
+            throw new UnauthorizedAccessException("Você não tem permissão para excluir este convite.");
         }
 
         // Delete invite

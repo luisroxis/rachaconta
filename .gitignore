@@ -329,3 +329,7 @@ healthchecksdb
 
 # Txt documents
 *.txt
+
+# AppSetings
+appsettings.json
+appsettings.Testing.json    
