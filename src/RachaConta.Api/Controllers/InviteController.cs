@@ -38,13 +38,24 @@ public class InviteController : ControllerBase
         return userId.Value;
     }
 
+    private string GetAuthenticatedUserName()
+    {
+        var user = HttpContext.Items["AuthenticatedUser"] as User;
+        if (user == null)
+        {
+            throw new UnauthorizedAccessException("Usuário não autenticado.");
+        }
+        return user.UserName;
+    }
+
     [HttpPost]
     public async Task<IActionResult> SendInvite([FromBody] SendInviteRequest request)
     {
         try
         {
             var usuarioId = GetAuthenticatedUserId();
-            var response = await _sendInviteUseCase.ExecuteAsync(request, usuarioId);
+            var userName = GetAuthenticatedUserName();
+            var response = await _sendInviteUseCase.ExecuteAsync(request, usuarioId, userName);
             return CreatedAtAction(nameof(SendInvite), new { id = response.Id }, response);
         }
         catch (InvalidOperationException ex)

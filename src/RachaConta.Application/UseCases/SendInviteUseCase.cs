@@ -10,14 +10,16 @@ public class SendInviteUseCase
 {
     private readonly IInviteRepository _inviteRepository;
     private readonly IEmailService _emailService;
+    private readonly IUserRepository _userRepository;
 
-    public SendInviteUseCase(IInviteRepository inviteRepository, IEmailService emailService)
+    public SendInviteUseCase(IInviteRepository inviteRepository,  IUserRepository userRepository, IEmailService emailService)
     {
         _inviteRepository = inviteRepository;
         _emailService = emailService;
+        _userRepository = userRepository;
     }
 
-    public async Task<InviteResponse> ExecuteAsync(SendInviteRequest request, Guid usuarioId)
+    public async Task<InviteResponse> ExecuteAsync(SendInviteRequest request, Guid usuarioId, string userName)
     {
         // Validate request
         if (string.IsNullOrWhiteSpace(request.Nome))
@@ -29,33 +31,40 @@ public class SendInviteUseCase
         {
             throw new InvalidOperationException("Email é obrigatório.");
         }
+        
+        var user = await _userRepository.GetByEmailAsync(request.Email);
+
+        if (user != null)
+        {
+            throw new InvalidOperationException("Email ja esta cadastrado no sistema.");
+        }
 
         if (string.IsNullOrWhiteSpace(request.CorpoEmail))
         {
-            throw new InvalidOperationException("Corpo do email é obrigatório.");
+            string link = "https://drive.google.com/file/d/1On-upFKC1YLl8iSOBys9lFWY19BFahCi/view?usp=sharing";
+           
+            request.CorpoEmail = _emailService.CorpoEmailConvite(request.Nome, userName, link);
         }
 
-        if (string.IsNullOrWhiteSpace(request.AmigoId))
-        {
-            throw new InvalidOperationException("AmigoId é obrigatório.");
-        }
+         var email = _emailService.GetEmailBody(request.CorpoEmail);
 
         // Create invite
         var invite = new Invite(
             nome: request.Nome,
             email: request.Email,
-            corpoEmail: request.CorpoEmail,
-            amigoId: request.AmigoId,
-            usuarioId: usuarioId
-        );
+            corpoEmail: email,
+            amigoId: usuarioId.ToString()
+        );       
 
         var createdInvite = await _inviteRepository.CreateAsync(invite);
+
+       
 
         // Send email
         await _emailService.SendEmailAsync(
             toEmail: request.Email,
-            subject: "Convite - RachaConta",
-            body: request.CorpoEmail
+            subject: "Convite Amizade - RachaConta",
+            body: email
         );
 
         // Return response

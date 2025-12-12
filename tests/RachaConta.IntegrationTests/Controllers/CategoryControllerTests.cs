@@ -1,12 +1,12 @@
+
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using RachaConta.Application.DTOs.Request;
 using RachaConta.Application.DTOs.Response;
 using RachaConta.Core.Entities;
-using RachaConta.Infrastructure.Data;
+using RachaConta.IntegrationTests.Data;
 using RachaConta.IntegrationTests.Helpers;
-using Xunit;
 
 namespace RachaConta.IntegrationTests.Controllers;
 
@@ -72,7 +72,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
         // Seed existing category
         using (var scope = _factory.Services.CreateScope())
         {
-            var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+            var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
             db.Categories.Add(new Category("Existing Category"));
             await db.SaveChangesAsync();
         }
@@ -100,7 +100,7 @@ public class CategoryControllerTests : IClassFixture<CustomWebApplicationFactory
 
         using (var scope = _factory.Services.CreateScope())
         {
-            var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+            var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
             db.Categories.AddRange(new[]
             {
                 new Category("Cat A"),

@@ -25,8 +25,7 @@ public class ResendInviteUseCase
             throw new InvalidOperationException("Convite não encontrado.");
         }
 
-        // Verify ownership
-        if (invite.UsuarioId != usuarioId)
+        if (invite.AmigoId != usuarioId.ToString())
         {
             throw new UnauthorizedAccessException("Você não tem permissão para reenviar este convite.");
         }

@@ -1,16 +1,10 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using RachaConta.Application.DTOs.Request;
 using RachaConta.Application.DTOs.Response;
 using RachaConta.Core.Entities;
-using RachaConta.Core.Interfaces.Services;
-using RachaConta.Infrastructure.Data;
+using RachaConta.IntegrationTests.Data;
 
 namespace RachaConta.IntegrationTests.Helpers;
 
@@ -32,7 +26,7 @@ public class TestAuthHelper
         string password = "Test@123")
     {
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
 
         var user = new User
         {

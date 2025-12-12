@@ -1,3 +1,4 @@
+
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -5,7 +6,7 @@ using Moq;
 using RachaConta.Application.DTOs.Request;
 using RachaConta.Application.DTOs.Response;
 using RachaConta.Core.Entities;
-using RachaConta.Infrastructure.Data;
+using RachaConta.IntegrationTests.Data;
 using RachaConta.IntegrationTests.Helpers;
 
 namespace RachaConta.IntegrationTests.Controllers;
@@ -43,10 +44,13 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             Nome = "Friend Name",
             Email = "friend@example.com",
             CorpoEmail = "You are invited to join RachaConta!",
-            AmigoId = "friend123"
         };
 
         // Setup email service mock
+        _factory.EmailServiceMock
+            .Setup(x => x.GetEmailBody(It.IsAny<string>()))
+            .Returns((string s) => s); // Return same string for simplicity
+
         _factory.EmailServiceMock
             .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask);
@@ -81,7 +85,6 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             Nome = "Friend Name",
             Email = "friend@example.com",
             CorpoEmail = "You are invited!",
-            AmigoId = "friend123"
         };
 
         // Act
@@ -103,7 +106,6 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             Nome = "Friend Name",
             Email = "invalid-email",
             CorpoEmail = "You are invited!",
-            AmigoId = "friend123"
         };
 
         // Act
@@ -124,8 +126,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
         {
             Nome = "",
             Email = "friend@example.com",
-            CorpoEmail = "",
-            AmigoId = ""
+            CorpoEmail = ""
         };
 
         // Act
@@ -133,6 +134,52 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
 
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task SendInvite_WithEmptyBody_GeneratesDefaultBody()
+    {
+        // Arrange
+        var (user, token) = await _authHelper.CreateAuthenticatedUserAsync();
+        _authHelper.AddAuthorizationHeader(_client, token);
+
+        var request = new SendInviteRequest
+        {
+            Nome = "Friend Name",
+            Email = "friend_default@example.com",
+            CorpoEmail = "", // Empty body to trigger default generation
+        };
+
+        // Setup email service mock
+        _factory.EmailServiceMock
+            .Setup(x => x.CorpoEmailConvite(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Returns("Default Body Content");
+
+        _factory.EmailServiceMock
+            .Setup(x => x.GetEmailBody(It.IsAny<string>()))
+            .Returns((string s) => s);
+
+        _factory.EmailServiceMock
+            .Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/invite", request);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        var inviteResponse = await response.Content.ReadFromJsonAsync<InviteResponse>();
+        Assert.NotNull(inviteResponse);
+        Assert.Equal("Default Body Content", inviteResponse.CorpoEmail);
+
+        // Verify methods were called
+        _factory.EmailServiceMock.Verify(
+            x => x.CorpoEmailConvite("Friend Name", user.UserName, It.IsAny<string>()),
+            Times.Once);
+
+        _factory.EmailServiceMock.Verify(
+            x => x.SendEmailAsync("friend_default@example.com", It.IsAny<string>(), "Default Body Content"),
+            Times.Once);
     }
 
     #endregion
@@ -148,7 +195,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
 
         // Create an invite
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
 
         var invite = new Invite
         {
@@ -156,8 +203,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             Nome = "Friend",
             Email = "friend@example.com",
             CorpoEmail = "Invite body",
-            AmigoId = "friend123",
-            UsuarioId = user.Id,
+            AmigoId = user.Id.ToString(),
             DataEnvio = DateTime.UtcNow,
             Reenvio = false,
             Aceite = false
@@ -198,7 +244,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
         _authHelper.AddAuthorizationHeader(_client, token);
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
 
         var invite = new Invite
         {
@@ -206,8 +252,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             Nome = "Friend",
             Email = "friend@example.com",
             CorpoEmail = "Invite body",
-            AmigoId = "friend123",
-            UsuarioId = user.Id,
+            AmigoId = user.Id.ToString(),
             DataEnvio = DateTime.UtcNow,
             Reenvio = true, // Already resent
             DataReenvio = DateTime.UtcNow,
@@ -237,7 +282,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             username: "user2");
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
 
         // Create invite owned by user2
         var invite = new Invite
@@ -246,14 +291,13 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             Nome = "Friend",
             Email = "friend@example.com",
             CorpoEmail = "Invite body",
-            AmigoId = "friend123",
-            UsuarioId = user2.Id, // Owned by user2
+            AmigoId = user2.Id.ToString(),
             DataEnvio = DateTime.UtcNow,
             Reenvio = false,
             Aceite = false
         };
 
-        db.Invites.Add(invite);
+        db.Invites.Add(invite); 
         await db.SaveChangesAsync();
 
         // Try to resend with user1's token
@@ -307,7 +351,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
         _authHelper.AddAuthorizationHeader(_client, token);
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
 
         var invite = new Invite
         {
@@ -315,8 +359,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             Nome = "Friend",
             Email = "friend@example.com",
             CorpoEmail = "Invite body",
-            AmigoId = "friend123",
-            UsuarioId = user.Id,
+            AmigoId = user.Id.ToString(),
             DataEnvio = DateTime.UtcNow,
             Reenvio = false,
             Aceite = false
@@ -331,8 +374,10 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
         // Assert
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-        // Verify invite was deleted
-        var deletedInvite = await db.Invites.FindAsync(invite.Id);
+        // Verify invite was deleted - use a new scope to avoid cache
+        using var verifyScope = _factory.Services.CreateScope();
+        var verifyDb = verifyScope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
+        var deletedInvite = await verifyDb.Invites.FindAsync(invite.Id);
         Assert.Null(deletedInvite);
     }
 
@@ -349,7 +394,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             username: "user2");
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
 
         var invite = new Invite
         {
@@ -357,8 +402,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             Nome = "Friend",
             Email = "friend@example.com",
             CorpoEmail = "Invite body",
-            AmigoId = "friend123",
-            UsuarioId = user2.Id, // Owned by user2
+            AmigoId = user2.Id.ToString(), // Owned by user2
             DataEnvio = DateTime.UtcNow,
             Reenvio = false,
             Aceite = false
@@ -418,7 +462,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
         _authHelper.AddAuthorizationHeader(_client, token);
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
 
         // Create multiple invites for the user
         var invites = new List<Invite>
@@ -429,8 +473,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
                 Nome = "Friend 1",
                 Email = "friend1@example.com",
                 CorpoEmail = "Invite 1",
-                AmigoId = "friend1",
-                UsuarioId = user.Id,
+                AmigoId = user.Id.ToString(),
                 DataEnvio = DateTime.UtcNow,
                 Reenvio = false,
                 Aceite = false
@@ -441,8 +484,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
                 Nome = "Friend 2",
                 Email = "friend2@example.com",
                 CorpoEmail = "Invite 2",
-                AmigoId = "friend2",
-                UsuarioId = user.Id,
+                AmigoId = user.Id.ToString(),
                 DataEnvio = DateTime.UtcNow,
                 Reenvio = false,
                 Aceite = false
@@ -475,7 +517,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
             username: "user2");
 
         using var scope = _factory.Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<RachaContaDbContext>();
+        var db = scope.ServiceProvider.GetRequiredService<TestRachaContaDbContext>();
 
         // Create invites for both users
         var invites = new List<Invite>
@@ -486,8 +528,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
                 Nome = "User1 Friend",
                 Email = "user1friend@example.com",
                 CorpoEmail = "Invite",
-                AmigoId = "friend1",
-                UsuarioId = user1.Id,
+                AmigoId = user1.Id.ToString(),
                 DataEnvio = DateTime.UtcNow,
                 Reenvio = false,
                 Aceite = false
@@ -498,8 +539,7 @@ public class InviteControllerTests : IClassFixture<CustomWebApplicationFactory>,
                 Nome = "User2 Friend",
                 Email = "user2friend@example.com",
                 CorpoEmail = "Invite",
-                AmigoId = "friend2",
-                UsuarioId = user2.Id,
+                AmigoId = user2.Id.ToString(),
                 DataEnvio = DateTime.UtcNow,
                 Reenvio = false,
                 Aceite = false
