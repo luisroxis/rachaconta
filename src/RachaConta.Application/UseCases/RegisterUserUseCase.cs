@@ -1,7 +1,7 @@
 using RachaConta.Core.Entities;
 using BCrypt.Net;
 using RachaConta.Application.DTOs;
-using RachaConta.Application.Interfaces;
+using RachaConta.Core.Interfaces.Repositories;
 
 namespace RachaConta.Application.UseCases;
 

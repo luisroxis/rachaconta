@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using RachaConta.Application.Interfaces;
+using RachaConta.Core.Interfaces.Repositories;
 
 namespace RachaConta.Api.Middleware;
 

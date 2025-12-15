@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
-using RachaConta.Application.Interfaces;
+using RachaConta.Core.Interfaces.Services;
 
 namespace RachaConta.Infrastructure.Services;
 

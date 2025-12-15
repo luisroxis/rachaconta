@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using RachaConta.Application.Interfaces;
+using RachaConta.Core.Interfaces.Services;
 using RachaConta.Infrastructure.Data;
 using RachaConta.IntegrationTests.Data;
 

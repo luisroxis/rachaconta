@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using RachaConta.Application.Interfaces;
 using RachaConta.Core.Entities;
+using RachaConta.Core.Interfaces.Repositories;
 using RachaConta.Infrastructure.Data;
 
 namespace RachaConta.Infrastructure.Repositories;

@@ -1,4 +1,4 @@
-namespace RachaConta.Application.Interfaces;
+namespace RachaConta.Core.Interfaces.Services;
 
 public interface IEmailService
 {
