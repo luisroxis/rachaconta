@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RachaConta.Application.Interfaces; // For IEmailService
 using RachaConta.Application.UseCases;
 using RachaConta.Core.Interfaces.Repositories;
 using RachaConta.Core.Interfaces.Services;
@@ -26,6 +25,8 @@ public static class ServiceBuilder
         services.AddScoped<IInviteRepository, InviteRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+        services.AddScoped<IGrupoRepository, GrupoRepository>();
+        services.AddScoped<IParticipanteGrupoRepository, ParticipanteGrupoRepository>();
 
         // Services
         services.AddScoped<IEmailService, EmailService>();
@@ -48,6 +49,12 @@ public static class ServiceBuilder
         services.AddScoped<ListPendingFriendshipsUseCase>();
         services.AddScoped<ApproveFriendshipUseCase>();
         services.AddScoped<ListAcceptedFriendshipsUseCase>();
+        services.AddScoped<CreateGrupoUseCase>();
+        services.AddScoped<ListGruposUseCase>();
+        services.AddScoped<GetGrupoDetailsUseCase>();
+        services.AddScoped<AddParticipantesGrupoUseCase>();
+        services.AddScoped<PromoteParticipanteUseCase>();
+        services.AddScoped<DeleteParticipanteGrupoUseCase>();
 
         return services;
     }

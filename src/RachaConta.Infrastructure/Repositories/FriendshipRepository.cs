@@ -77,4 +77,14 @@ public class FriendshipRepository : IFriendshipRepository
         _context.Friendships.Remove(friendship);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<bool> AreFriendsAsync(Guid user1Id, Guid user2Id)
+    {
+        var friendship = await _context.Friendships
+            .FirstOrDefaultAsync(f => 
+                ((f.UserId == user1Id && f.AmigoId == user2Id) ||
+                 (f.UserId == user2Id && f.AmigoId == user1Id)) &&
+                f.Approved);
+        return friendship != null;
+    }
 }

@@ -12,4 +12,5 @@ public interface IFriendshipRepository
     Task<List<Friendship>> ListPendingSentAsync(Guid userId);
     Task<List<Friendship>> ListAcceptedAsync(Guid userId);
     Task DeleteAsync(Friendship friendship);
+    Task<bool> AreFriendsAsync(Guid user1Id, Guid user2Id);
 }

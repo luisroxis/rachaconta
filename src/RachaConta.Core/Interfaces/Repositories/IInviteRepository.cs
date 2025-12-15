@@ -1,6 +1,6 @@
 using RachaConta.Core.Entities;
 
-namespace RachaConta.Application.Interfaces;
+namespace RachaConta.Core.Interfaces.Repositories;
 
 public interface IInviteRepository
 {

@@ -1,4 +1,4 @@
-using RachaConta.Application.Interfaces;
+using RachaConta.Core.Interfaces.Repositories;
 
 namespace RachaConta.Application.UseCases;
 

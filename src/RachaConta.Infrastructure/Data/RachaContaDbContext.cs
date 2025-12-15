@@ -14,6 +14,8 @@ public class RachaContaDbContext : DbContext
     public DbSet<Invite> Invites { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Friendship> Friendships { get; set; }
+    public DbSet<Grupo> Grupos { get; set; }
+    public DbSet<ParticipanteGrupo> ParticipantesGrupo { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -51,5 +53,7 @@ public class RachaContaDbContext : DbContext
         modelBuilder.ApplyConfiguration(new Configurations.InviteConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.CategoryConfiguration());
         modelBuilder.ApplyConfiguration(new Configurations.FriendshipConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.GrupoConfiguration());
+        modelBuilder.ApplyConfiguration(new Configurations.ParticipanteGrupoConfiguration());
     }
 }

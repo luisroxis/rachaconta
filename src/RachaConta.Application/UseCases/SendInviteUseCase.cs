@@ -1,7 +1,7 @@
 using RachaConta.Application.DTOs.Request;
 using RachaConta.Application.DTOs.Response;
-using RachaConta.Application.Interfaces;
 using RachaConta.Core.Entities;
+using RachaConta.Core.Interfaces.Repositories;
 using RachaConta.Core.Interfaces.Services;
 
 namespace RachaConta.Application.UseCases;
