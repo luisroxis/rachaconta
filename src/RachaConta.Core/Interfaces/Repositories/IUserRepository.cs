@@ -11,4 +11,5 @@ public interface IUserRepository
     Task<User?> GetByUserNameAsync(string userName);
     Task<User?> GetByIdAsync(Guid id);
     Task UpdatePasswordAsync(Guid userId, string newPasswordHash);
+    Task<List<User>> ListAllExceptAsync(Guid userId);
 }

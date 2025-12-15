@@ -56,4 +56,11 @@ public class UserRepository : IUserRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<List<User>> ListAllExceptAsync(Guid userId)
+    {
+        return await _context.Users
+            .Where(u => u.Id != userId)
+            .ToListAsync();
+    }
 }

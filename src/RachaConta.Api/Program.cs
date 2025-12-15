@@ -8,8 +8,12 @@ builder.Services.AddProjectServices(builder.Configuration);
 builder.Services.AddAuthenticationConfig(builder.Configuration);
 
 // Add HealthChecks
-builder.Services.AddHealthChecks()
-    .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!);
+var healthChecksBuilder = builder.Services.AddHealthChecks();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrEmpty(connectionString))
+{
+    healthChecksBuilder.AddNpgSql(connectionString);
+}
 
 builder.Services.AddCors(options =>
 {

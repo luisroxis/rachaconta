@@ -25,6 +25,7 @@ public static class ServiceBuilder
         services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
         services.AddScoped<IInviteRepository, InviteRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IFriendshipRepository, FriendshipRepository>();
 
         // Services
         services.AddScoped<IEmailService, EmailService>();
@@ -42,6 +43,11 @@ public static class ServiceBuilder
         services.AddScoped<ListInvitesUseCase>();
         services.AddScoped<CreateCategoryUseCase>();
         services.AddScoped<ListCategoriesUseCase>();
+        services.AddScoped<ListUsersUseCase>();
+        services.AddScoped<RequestFriendshipUseCase>();
+        services.AddScoped<ListPendingFriendshipsUseCase>();
+        services.AddScoped<ApproveFriendshipUseCase>();
+        services.AddScoped<ListAcceptedFriendshipsUseCase>();
 
         return services;
     }
